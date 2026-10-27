@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FNCP Control</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    FNCP <span>Control</span>
+  </div>
+
+  <nav id="nav"></nav>
+
+  <div class="topsearch">
+    <input
+      placeholder="🔎 FNCP, empresa, título, valor ou TAG/TEG..."
+      onkeydown="if(event.key==='Enter'){S.q=this.value;go('dash')}"
+    >
+  </div>
+
+  <button
+    id="themeBtn"
+    class="btn small secondary theme-toggle"
+    type="button"
+    onclick="toggleTheme()"
+    title="Ativar modo noturno"
+    aria-label="Alternar modo noturno"
+  >
+    🌙
+  </button>
+
+  <button
+    class="btn small secondary"
+    onclick="userModal()"
+  >
+    👤 <span id="userLabel">Usuário</span>
+  </button>
+</header>
+
+<main id="app"></main>
+
+<div
+  id="modal"
+  class="modalback"
+  onclick="if(event.target===this)closeModal()"
+>
+  <div class="modal" id="modalBody"></div>
+</div>
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+...
+<script src="script.js"></script>
+
+</body>
+</html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FNCP Control</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    FNCP <span>Control</span>
+  </div>
+
+  <nav id="nav"></nav>
+
+  <div class="topsearch">
+    <input
+      placeholder="🔎 FNCP, empresa, título, valor ou TAG/TEG..."
+      onkeydown="if(event.key==='Enter'){S.q=this.value;go('dash')}"
+    >
+  </div>
+
+  <button
+    id="themeBtn"
+    class="btn small secondary theme-toggle"
+    type="button"
+    onclick="toggleTheme()"
+    title="Ativar modo noturno"
+    aria-label="Alternar modo noturno"
+  >
+    🌙
+  </button>
+
+  <button
+    class="btn small secondary"
+    onclick="userModal()"
+  >
+    👤 <span id="userLabel">Usuário</span>
+  </button>
+</header>
+
+<main id="app"></main>
+
+<div
+  id="modal"
+  class="modalback"
+  onclick="if(event.target===this)closeModal()"
+>
+  <div class="modal" id="modalBody"></div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
