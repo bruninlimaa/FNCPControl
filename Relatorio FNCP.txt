@@ -1,0 +1,437 @@
+RELATÓRIO — FNCP CONTROL
+1. Objetivo do projeto
+O projeto se chama FNCP Control.
+
+É um sistema web local para acompanhamento de FNCPs, com dados vindos do Jira. O projeto possui Java/Maven no backend e HTML/CSS/JavaScript no frontend.
+
+O servidor local roda em:
+http://127.0.0.1:8081
+
+O projeto está localizado em:
+C:\Users\bruno.lima\OneDrive - Lockton\Documentos\FNCP_Control_Revisado\FNCP_Control_Revisado
+
+2. Estrutura principal
+Na raiz do projeto existem/foram utilizados:
+FNCP_Control_Revisado
+│
+├── src
+├── target
+├── fncp-importacao.json
+├── FNCP_Control_Integrado.html
+├── iniciar_FNCP_Control.bat
+├── pom.xml
+├── README.md
+└── RELATORIO_TESTES.md
+
+O frontend usado pelo servidor Spring/Java precisa estar em:
+src\main\resources\static\
+
+O arquivo principal precisa se chamar:
+index.html
+
+Portanto:
+C:\Users\bruno.lima\OneDrive - Lockton\Documentos\FNCP_Control_Revisado\FNCP_Control_Revisado\src\main\resources\static\index.html
+
+3. Backend
+A classe principal do servidor é:
+br.com.fncp.jirateste.FncpApiServer
+
+O projeto usa Maven.
+
+Para entrar na pasta correta:
+cd "C:\Users\bruno.lima\OneDrive - Lockton\Documentos\FNCP_Control_Revisado\FNCP_Control_Revisado"
+
+É obrigatório executar Maven nessa pasta, porque é onde está o pom.xml.
+
+Se estiver em:
+C:\WINDOWS\system32
+
+não executar Maven dali.
+4. Compilar o projeto
+Depois de entrar na pasta do projeto:
+mvn -q compile
+
+Se quiser fazer uma limpeza completa:
+mvn -q clean compile
+
+Porém, anteriormente o clean apresentou erro porque o Windows/OneDrive estava mantendo arquivos dentro de target em uso.
+
+Quando isso aconteceu, foi possível resolver removendo o target manualmente:
+Remove-Item ".\target" -Recurse -Force
+
+e depois:
+mvn -q compile
+
+5. Iniciar o servidor
+Depois de compilar:
+mvn -q "-Dexec.mainClass=br.com.fncp.jirateste.FncpApiServer" exec:java
+
+Cuidado: o comando correto termina em:
+exec:java
+
+Não pode ficar:
+exec:javamvn
+
+nem:
+exec:javab
+
+nem:
+exec:javamvn -q
+
+O resultado esperado é semelhante a:
+FNCP Control Revisado em http://127.0.0.1:8081
+Modo: somente leitura
+Arquivo de dados: C:\Users\bruno.lima\OneDrive - Lockton\Documentos\FNCP_Control_Revisado\FNCP_Control_Revisado\fncp-importacao.json
+
+Enquanto esse processo estiver rodando, não fechar essa janela do PowerShell.
+6. Abrir o sistema
+Com o servidor funcionando, abrir no navegador:
+http://127.0.0.1:8081
+
+Se aparecer:
+{
+  "erro" : "Front-end não encontrado. Execute o servidor na raiz do projeto."
+}
+
+verificar se existe:
+src\main\resources\static\index.html
+
+Comando para verificar:
+Get-Item ".\src\main\resources\static\index.html" | Select-Object FullName,Length
+
+Para listar os arquivos:
+Get-ChildItem ".\src\main\resources\static" | Select-Object Name,Length
+
+7. Arquivo de dados
+Os dados utilizados pelo sistema estão em:
+fncp-importacao.json
+
+Caminho completo:
+C:\Users\bruno.lima\OneDrive - Lockton\Documentos\FNCP_Control_Revisado\FNCP_Control_Revisado\fncp-importacao.json
+
+Esse arquivo contém os dados das FNCPs utilizados pelo sistema.
+
+Não apagar esse arquivo.
+8. Frontend
+O frontend é um arquivo HTML único com:
+- HTML
+- CSS
+- JavaScript
+O arquivo precisa ficar dentro de:
+src\main\resources\static\
+
+com o nome:
+index.html
+
+O arquivo que está sendo trabalhado deve ser tratado como arquivo completo, não como uma página que deve ser reconstruída do zero.
+9. Problema importante que já aconteceu
+Em determinado momento foi criado um index.html incorreto e o sistema abriu, porém:
+- o visual ficou diferente;
+- vários botões deixaram de funcionar;
+- partes do dashboard desapareceram;
+- o HTML original foi alterado mais do que deveria.
+Portanto, a regra para a próxima IA é:
+NÃO reconstruir o HTML do zero.
+
+NÃO substituir funções existentes sem necessidade.
+
+Fazer somente alterações cirúrgicas no HTML fornecido pelo usuário.
+
+10. Estado desejado do sistema
+Existem dois dashboards que devem permanecer:
+Dashboard Mensal
+É o dashboard principal de acompanhamento mensal.
+Dashboard Fiscal
+Não deve ser apagado.
+
+O usuário pediu explicitamente:
+manter os dois dashboards.
+
+Qualquer alteração futura deve preservar o Dashboard Fiscal.
+11. Alterações solicitadas para o Dashboard Mensal
+O usuário quer que o Dashboard Mensal tenha:
+Ano
+Manter a seleção de ano e adicionar:
+2025
+
+Os demais anos existentes também devem continuar.
+Mês
+Adicionar:
+Todos
+
+além de:
+Janeiro
+Fevereiro
+Março
+Abril
+Maio
+Junho
+Julho
+Agosto
+Setembro
+Outubro
+Novembro
+Dezembro
+
+12. Empresa
+No filtro:
+EMPRESA
+
+devem aparecer todas as empresas existentes nos dados/cadastro do sistema.
+
+Não remover empresas existentes.
+
+A opção inicial deve permitir:
+Todas as empresas
+
+13. Status
+No filtro:
+STATUS
+
+devem aparecer todos os status existentes no sistema.
+
+Não simplesmente inventar ou reduzir a lista.
+
+A opção inicial deve ser:
+Todos os status
+
+14. Cards do Dashboard Mensal
+Devem existir:
+Gasto anual
+Deve representar o gasto:
+01/01 do ano selecionado
+
+até:
+data presente
+
+Ou seja, não é simplesmente um valor fixo do ano inteiro quando estamos no meio do ano.
+Gasto do mês
+Deve mostrar o gasto correspondente ao mês selecionado.
+
+Se o usuário selecionar:
+Outubro
+
+deve mostrar somente Outubro.
+15. Remover do Dashboard Mensal
+Não utilizar:
+FNCPs pagas
+
+porque não existe uma data fixa de pagamento que permita tratar isso como um indicador confiável.
+
+Também não utilizar:
+Média
+
+16. Gráfico Gasto Mensal
+O gráfico deve apresentar:
+Janeiro
+Fevereiro
+Março
+...
+Dezembro
+
+com barras.
+
+Cada barra deve mostrar o valor gasto daquele mês.
+
+O valor deve aparecer acima da barra.
+
+Exemplo conceitual:
+             R$ 25.000
+                 │
+              ████
+              ████
+              ████
+              ████
+              ████
+────────────────────────
+ Jan   Fev   Mar   Abr
+
+Quando o usuário clicar em uma barra:
+o Dashboard Mensal deve selecionar aquele mês e atualizar os dados correspondentes.
+
+17. Gasto por empresa
+O card:
+Gasto por empresa
+
+deve mostrar as empresas que tiveram gastos no período selecionado.
+
+Se o mês selecionado for:
+Agosto/2026
+
+deve mostrar os gastos das empresas em Agosto/2026.
+
+A ordenação deve permitir visualizar as empresas com maiores gastos primeiro.
+18. Lançamentos
+O título deve ser:
+Lançamentos do mês
+
+e não:
+Últimos lançamentos
+
+Quando o usuário escolher um mês, devem aparecer os lançamentos daquele mês.
+19. FNCP → Jira
+Na tabela de:
+Lançamentos do mês
+
+a coluna FNCP deve ser clicável.
+
+O usuário quer o mesmo comportamento que já existe no Dashboard Fiscal.
+
+Ao clicar na FNCP, deve abrir a respectiva issue no Jira.
+
+O formato de URL do Jira é:
+https://locktonbrasil.atlassian.net/browse/CHAVE-DA-FNCP
+
+Exemplo conceitual:
+FNCP-1234
+
+vira:
+https://locktonbrasil.atlassian.net/browse/FNCP-1234
+
+O ideal é reutilizar a função/link que já existe no Dashboard Fiscal, em vez de criar uma lógica diferente.
+20. Exportações
+No Dashboard Mensal devem permanecer:
+Limpar filtros
+Exportar CSV
+Exportar Excel
+
+Essas funções devem respeitar os filtros selecionados.
+
+Exemplo:
+
+Ano:
+2026
+
+Mês:
+Agosto
+
+Empresa:
+EMPRESA X
+
+Ao exportar, devem ser exportados os dados correspondentes aos filtros.
+21. Página Lançamentos
+A página separada de:
+Lançamentos
+
+foi considerada desnecessária porque os dados vêm do Jira.
+
+A intenção é que os lançamentos sejam apresentados diretamente no:
+Dashboard Mensal
+
+22. Relatórios
+A página:
+Relatórios
+
+deve continuar existindo.
+
+Ao selecionar um ano, deve apresentar:
+Gráfico
+Barras correspondentes aos gastos de cada mês daquele ano.
+Total gasto no ano
+Total desde:
+01/01 do ano selecionado
+
+até a data presente.
+Pagamentos
+Quantidade de pagamentos realizados desde:
+01/01 do ano selecionado
+
+até a data presente.
+Gasto por empresa
+Mostrar quais empresas tiveram gastos naquele ano e os respectivos valores.
+23. Remover do Relatório
+Não utilizar:
+Empresas com gasto
+
+como indicador separado.
+
+Não utilizar:
+Média
+
+24. Modo escuro
+O modo escuro apresentou problemas anteriormente.
+
+A correção deve ser feita sem quebrar o modo claro.
+
+Também foi solicitado que os valores do Dashboard Mensal sejam visualmente pretos, conforme o pedido do usuário, sem deixar de preservar a estrutura do tema.
+25. Regra PRINCIPAL para futuras alterações
+A próxima IA deve seguir isto:
+O HTML fornecido pelo usuário é a fonte principal.
+
+Não criar um dashboard novo.
+
+Não remover componentes que não foram solicitados.
+
+Não substituir o Dashboard Fiscal.
+
+Não alterar o backend sem necessidade.
+
+Não apagar funções JavaScript existentes apenas porque parecem diferentes.
+
+Fazer alterações incrementais no HTML original.
+
+Se uma alteração exigir modificar JavaScript existente, localizar primeiro a função correspondente e alterar somente aquela função.
+26. Comandos rápidos para continuar
+Entrar no projeto
+cd "C:\Users\bruno.lima\OneDrive - Lockton\Documentos\FNCP_Control_Revisado\FNCP_Control_Revisado"
+
+Ver o frontend
+Get-Item ".\src\main\resources\static\index.html" | Select-Object FullName,Length
+
+Ver os arquivos da pasta static
+Get-ChildItem ".\src\main\resources\static" | Select-Object Name,Length
+
+Compilar
+mvn -q compile
+
+Se target estiver travado
+Primeiro garantir que o servidor não está rodando.
+
+Depois:
+Get-Process java,javaw -ErrorAction SilentlyContinue | Select-Object Id,ProcessName,Path
+
+Se não houver processo Java, pode tentar:
+Remove-Item ".\target" -Recurse -Force
+
+Depois:
+mvn -q compile
+
+Iniciar
+mvn -q "-Dexec.mainClass=br.com.fncp.jirateste.FncpApiServer" exec:java
+
+Abrir
+http://127.0.0.1:8081
+
+Se o navegador mostrar versão antiga
+Usar:
+Ctrl + F5
+
+27. Arquivo atual importante
+O HTML original/referência contém a estrutura do sistema, incluindo o Dashboard Mensal e a página de Relatórios. A estrutura começa com as variáveis visuais e páginas do sistema; por exemplo, o HTML define Dashboard Mensal, Relatórios, os filtros de Ano/Mês/Empresa/Status e os botões de exportação. FNCP_Control_Integrado_revisado
+
+A estrutura atual do Dashboard Mensal possui os cards Gasto anual e Gasto do mês, o gráfico Gasto mensal, Gasto por empresa e Lançamentos do mês. FNCP_Control_Integrado_revisado
+
+A página de Relatórios também já possui seleção de ano, exportações, total anual, pagamentos e gráfico mensal. FNCP_Control_Integrado_revisado
+RESUMO PARA A OUTRA IA
+Projeto: FNCP Control
+Stack: Java + Maven + HTML/CSS/JavaScript
+Pasta:
+C:\Users\bruno.lima\OneDrive - Lockton\Documentos\FNCP_Control_Revisado\FNCP_Control_Revisado
+
+Frontend:
+src\main\resources\static\index.html
+
+Dados:
+fncp-importacao.json
+
+Classe do servidor:
+br.com.fncp.jirateste.FncpApiServer
+
+Compilar:
+mvn -q compile
+
+Executar:
+mvn -q "-Dexec.mainClass=br.com.fncp.jirateste.FncpApiServer" exec:java
+
+Endereço:
+http://127.0.0.1:8081
