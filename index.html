@@ -1,122 +1,163 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FNCP Control</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>FNCP Control</title>
 
-<link rel="stylesheet" href="style.css">
+    <!-- Aplica o tema salvo antes da primeira pintura (evita "piscada" no modo escuro) -->
+    <script>
+        try {
+            if (localStorage.getItem('fncp_theme') === 'dark') {
+                document.documentElement.dataset.theme = 'dark';
+            }
+        } catch (e) {}
+    </script>
+
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <header>
-  <div class="brand">
-    FNCP <span>Control</span>
-  </div>
+    <div class="brand">
+        FNCP <span>Control</span>
+    </div>
 
-  <nav id="nav"></nav>
+    <nav id="nav"></nav>
 
-  <div class="topsearch">
-    <input
-      placeholder="🔎 FNCP, empresa, título, valor ou TAG/TEG..."
-      onkeydown="if(event.key==='Enter'){S.q=this.value;go('dash')}"
+    <div class="topsearch">
+        <input
+            placeholder="🔎 FNCP, empresa, título ou valor..."
+            onkeydown="if(event.key==='Enter'){S.q=this.value;go('dash')}"
+        >
+    </div>
+
+    <button
+        id="themeBtn"
+        class="btn small secondary theme-toggle"
+        type="button"
+        onclick="toggleTheme()"
+        title="Alternar tema"
     >
-  </div>
-
-  <button
-    id="themeBtn"
-    class="btn small secondary theme-toggle"
-    type="button"
-    onclick="toggleTheme()"
-    title="Ativar modo noturno"
-    aria-label="Alternar modo noturno"
-  >
-    🌙
-  </button>
-
-  <button
-    class="btn small secondary"
-    onclick="userModal()"
-  >
-    👤 <span id="userLabel">Usuário</span>
-  </button>
+        🌙
+    </button>
 </header>
 
 <main id="app"></main>
 
+<!-- Modal global (conteúdo preenchido via JS em #modalBody) -->
 <div
-  id="modal"
-  class="modalback"
-  onclick="if(event.target===this)closeModal()"
+    id="modal"
+    class="modalback"
+    onclick="if(event.target===this)closeModal()"
 >
-  <div class="modal" id="modalBody"></div>
+    <div class="modal" id="modalBody"></div>
 </div>
-<link rel="stylesheet" href="style.css">
 
-</head>
-<body>
 
-...
-<script src="script.js"></script>
+<!-- ==========================================================================
+     TEMPLATES (HTML estático usado pelo JS via tpl('id'))
+     ========================================================================== -->
 
-</body>
-</html>
-<!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FNCP Control</title>
+<!-- Dashboard Fiscal -->
+<template id="tpl-fiscal">
+<div id="fiscalWrap" class="fiscal-wrap">
+  <div class="fiscal-body">
 
-<link rel="stylesheet" href="style.css">
+    <section class="panel filters">
+      <div class="field">
+        <label>Ano fiscal</label>
+        <select id="fy">
+          <option value="2024">AF 2024–2025</option>
+          <option value="2025" selected>AF 2025–2026</option>
+          <option value="2026">AF 2026–2027</option>
+          <option value="2027">AF 2027–2028</option>
+          <option value="2028">AF 2028–2029</option>
+        </select>
+      </div>
 
-</head>
+      <div class="field">
+        <label>Data para análise</label>
+        <select id="basis">
+          <option value="dataVencimento">Vencimento</option>
+          <option value="dataPagamento">Pagamento / agendamento</option>
+          <option value="competencia">Competência</option>
+        </select>
+      </div>
 
-<body>
+      <div class="field"><label>Data inicial</label><input type="date" id="from" value="2025-05-01"></div>
+      <div class="field"><label>Data final</label><input type="date" id="to" value="2026-04-30"></div>
 
-<header>
-  <div class="brand">
-    FNCP <span>Control</span>
+      <div class="field">
+        <label>Empresa</label>
+        <select id="company"><option value="">Todas as empresas</option></select>
+      </div>
+
+      <div class="field">
+        <label>Status</label>
+        <select id="status"><option value="">Todos os status</option></select>
+      </div>
+
+      <div class="field"><label>Busca por FNCP ou título</label><input id="q" placeholder="Ex.: FNCP-6538"></div>
+
+      <div class="field justify-end"><button id="reset">Limpar filtros</button></div>
+
+      <div class="muted span-all">Ano fiscal padrão: maio a abril. Você pode editar as datas livremente, inclusive selecionar abril a abril.</div>
+      <div class="muted span-all" id="loadstatus"></div>
+    </section>
+
+    <section class="kpis">
+      <div class="kpi"><div class="label">Total no período</div><div class="value" id="total">—</div><div class="muted" id="totalnote">Carregue o JSON</div></div>
+      <div class="kpi"><div class="label">FNCPs no filtro</div><div class="value" id="count">—</div><div class="muted">Registros correspondentes</div></div>
+      <div class="kpi"><div class="label">Valor pago</div><div class="value" id="complete">—</div><div class="muted">Não significa confirmação bancária</div></div>
+      <div class="kpi"><div class="label">Sem valor informado</div><div class="value" id="missing">—</div><div class="muted">Valor vazio no Jira</div></div>
+    </section>
+
+    <section class="charts">
+      <div class="panel">
+        <h2>Gastos por mês fiscal</h2>
+        <div class="muted" id="chartdesc">Maio a abril</div>
+        <div class="bars" id="bars"><div class="empty">Carregue o JSON para ver o gráfico.</div></div>
+      </div>
+
+      <div class="panel">
+        <h2>Maiores gastos por empresa</h2>
+        <div class="muted">Valores após aplicar os filtros.</div>
+        <div class="companies" id="companies"><div class="empty">Aguardando dados.</div></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>FNCPs do período</h2>
+      <div class="muted" id="tableinfo"></div>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>FNCP</th><th>Empresa</th><th>Título</th><th>Data analisada</th><th>Status</th><th class="money">Valor</th>
+            </tr>
+          </thead>
+          <tbody id="rows">
+            <tr><td colspan="6" class="empty">Carregue o JSON para começar.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
   </div>
-
-  <nav id="nav"></nav>
-
-  <div class="topsearch">
-    <input
-      placeholder="🔎 FNCP, empresa, título, valor ou TAG/TEG..."
-      onkeydown="if(event.key==='Enter'){S.q=this.value;go('dash')}"
-    >
-  </div>
-
-  <button
-    id="themeBtn"
-    class="btn small secondary theme-toggle"
-    type="button"
-    onclick="toggleTheme()"
-    title="Ativar modo noturno"
-    aria-label="Alternar modo noturno"
-  >
-    🌙
-  </button>
-
-  <button
-    class="btn small secondary"
-    onclick="userModal()"
-  >
-    👤 <span id="userLabel">Usuário</span>
-  </button>
-</header>
-
-<main id="app"></main>
-
-<div
-  id="modal"
-  class="modalback"
-  onclick="if(event.target===this)closeModal()"
->
-  <div class="modal" id="modalBody"></div>
 </div>
+</template>
+
+<!-- Modal "Informações do Sistema" -->
+<template id="tpl-system-info">
+    <div class="modalhead">
+        <h2>Informações do Sistema</h2>
+        <button class="close" onclick="closeModal()">×</button>
+    </div>
+    <p>Integração ativa com Jira.</p>
+</template>
+
 
 <script src="script.js"></script>
 
